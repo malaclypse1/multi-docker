@@ -1,15 +1,15 @@
-language: generic
 sudo: required
+language: generic
 services:
   - docker
   
- before_install:
+before_install:
   - docker build -t malaclypse1/react-test -f ./client/Dockerfile.dev ./client
   
- script:
+script:
   - docker run -e CI=true malaclypse1/react-test npm test -- --coverage
   
- after_success:
+after_success:
   - docker build -t malaclypse1/multi-client ./client
   - docker build -t malaclypse1/multi-nginx ./nginx
   - docker build -t malaclypse1/multi-server ./server
