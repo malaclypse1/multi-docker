@@ -1,0 +1,22 @@
+sudo: required
+services:
+  - docker
+  
+ before_install:
+  - docker build -t malaclypse1/react-test -f ./client/Dockerfile.dev ./client
+  
+ script:
+  - docker run malaclypse1/react-test npm test -- --coverage
+  
+ after_success:
+  - docker build -t malaclypse1/multi-client ./client
+  - docker build -t malaclypse1/multi-nginx ./nginx
+  - docker build -t malaclypse1/multi-server ./server
+  - docker build -t malaclypse1/multi-worker ./worker
+  # log into the docker cli
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # take those images and push them to docker hub
+  - docker push malaclypse1/multi-client
+  - docker push malaclypse1/multi-nginx
+  - docker push malaclypse1/multi-server
+  - docker push malaclypse1/multi-worker
